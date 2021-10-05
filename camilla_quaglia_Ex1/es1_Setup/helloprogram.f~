@@ -1,0 +1,10 @@
+!  First FORTRAN program by Camilla Quaglia
+! to compile 'gfortran helloprogram.f -o nameofthebinaryfilecompiled'
+! to see the output of the program './nameofthebinaryfilecompiled'
+
+      PROGRAM Hello
+      Print *, 'Hello world!!'
+      END PROGRAM Hello
+      
+      
+

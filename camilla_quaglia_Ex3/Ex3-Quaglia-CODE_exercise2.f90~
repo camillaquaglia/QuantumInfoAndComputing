@@ -1,0 +1,381 @@
+!     to compile 'gfortran Ex3-Quaglia-CODE_exercise2.f90 -o Ex3-Quaglia-CODE_exercise2.x'
+!     to run the executable  './Ex3-Quaglia-CODE_exercise2.x'
+!     to compile 'gfortran Ex3-Quaglia-CODE_exercise1.f90 -o Ex3-Quaglia-CODE_exercise1.x'
+  !     to run the executable  './Ex3-Quaglia-CODE_exercise1.x'
+!     to compile 'gfortran Ex3-Quaglia-CODE_exercise1.f90 -o Ex3-Quaglia-CODE_exercise1.x'
+  !     to run the executable  './Ex3-Quaglia-CODE_exercise1.x'
+
+MODULE DEBUGMOD
+  IMPLICIT NONE
+  LOGICAL :: debug_on
+
+  INTERFACE DEBUG
+     MODULE PROCEDURE INT_DEBUG
+     MODULE PROCEDURE CMPLX_DEBUG
+   !  MODULE PROCEDURE REAL4_DEBUG
+    ! MODULE PROCEDURE REAL8_DEBUG
+    ! MODULE PROCEDURE CMPLX8_DEBUG
+    ! MODULE PROCEDURE CMPLX16_DEBUG
+     MODULE PROCEDURE CMPLXmat_DEBUG
+    ! MODULE PROCEDURE CMPLX16MAT_DEBUG
+    ! MODULE PROCEDURE REAL8MAT_DEBUG
+    ! MODULE PROCEDURE REAL4MAT_DEBUG
+    ! MODULE PROCEDURE INT2VEC_DEBUG
+     MODULE PROCEDURE INTVEC_DEBUG
+  END INTERFACE DEBUG
+
+  
+CONTAINS
+  
+  SUBROUTINE INT_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    INTEGER :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE INT_DEBUG
+    
+  SUBROUTINE CMPLX_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    COMPLEX  :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE CMPLX_DEBUG
+  
+  SUBROUTINE CMPLXmat_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    COMPLEX,DIMENSION(:,:)  :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE CMPLXmat_DEBUG
+  
+  SUBROUTINE REAL_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    REAL  :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE REAL_DEBUG
+    SUBROUTINE CMPLXmat_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    REAL,DIMENSION(:,:)  :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE CMPLXmat_DEBUG
+  
+  SUBROUTINE INTvec_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    INTEGER,DIMENSION(:)  :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE INTVEC_DEBUG
+  
+!  SUBROUTINE DEBUGGING(debug,message,var,vec,mat)
+ !   LOGICAL, INTENT(IN) :: debug              ! 'debug' is a logical flag
+  !  CHARACTER(*),INTENT(IN) :: message        ! 'message' is the debug/error message
+   ! CLASS(*), OPTIONAL :: var     ! 'var' is the variable, optional
+   ! CLASS(*), DIMENSION(:), OPTIONAL :: vec   ! 'vec' is the vector,optional
+   ! CLASS(*), DIMENSION(:,:),OPTIONAL :: mat  ! 'mat' is the vector,optional
+    
+   ! IF (debug) THEN
+   !    PRINT*, message
+  !  END IF
+  !  IF(PRESENT(var)) THEN
+  !     select type(var)
+  !     type is (INTEGER)
+   !       PRINT*,"the variable is",var
+    !   type is (REAL)
+     !     PRINT*,"the variable is",var
+     !  type is (DOUBLE COMPLEX)
+     !     PRINT*,"the variable is",var
+          
+    !   end select
+   ! END IF
+   ! IF(PRESENT(vec)) THEN
+      ! select type(vec)
+      ! type is (INTEGER)
+       !   PRINT*,"the vector is",vec
+      ! type is (REAL)
+      !    PRINT*,"the vector is",vec
+     !  type is (DOUBLE COMPLEX)
+    !      PRINT*,"the vector is",vec
+      
+   !    end select
+       
+  !  END IF
+   ! IF(PRESENT(mat)) THEN
+    !   select type(vec)
+  !     type is (INTEGER)
+ !         PRINT*,"The matrix is",mat
+   !    type is (REAL)
+!          PRINT*,"The matrix is",mat
+ !      type is (DOUBLE COMPLEX)
+  !        PRINT*,"The matrix is",mat
+   !   
+    !   end select
+
+   ! END IF
+    
+ ! END SUBROUTINE DEBUGGING
+  
+END MODULE DEBUGMOD
+
+MODULE matrix
+  IMPLICIT NONE
+
+  REAL*8, DIMENSION(:,:), ALLOCATABLE :: matrix1,matrix2,res1,res2,res3,res4
+  INTEGER*4 :: rows1,cols1,rows2,cols2  
+  INTEGER*4 ::  ii, jj, kk
+  INTEGER*4, DIMENSION(2) :: size1,size2 
+  DOUBLE PRECISION :: start,finish
+
+CONTAINS
+      
+  SUBROUTINE INSERT_DIMENSION(rows1,cols1,rows2,cols2)
+    !-----------------------------------------------------------------
+    ! This subroutine is used to ask the user for the dimensions
+    ! of the matrices to be multiplied.
+    ! ARGUMENTS
+    ! - rows1 :    number of rows of the first matrix
+    ! - cols1 :    number of columns of the first matrix
+    ! - rows2 :    number of rows of the second matrix
+    ! - cols2 :    number of columns of the second matrix
+    !-----------------------------------------------------------------
+    INTEGER*4 :: rows1,cols1,rows2,cols2
+    rows1=0
+    cols1=0
+    rows2=0
+    cols2=0   
+    DO WHILE (rows1 .le. 0)
+       PRINT*, "Insert the number of rows of the first matrix:"
+       READ*, rows1
+       IF (rows1 .le. 0) PRINT*, "Insert positive value!"
+    ENDDO
+    DO WHILE (cols1 .le. 0)
+       PRINT*, "Insert the number of columns of the first matrix"
+       READ*, cols1
+       IF (cols1 .le. 0) PRINT*, "Insert positive value!"
+    ENDDO
+    DO WHILE (rows2 .le. 0)
+       PRINT*, "Insert the number of rows of the second matrix"
+       READ*, rows2
+       IF (rows2 .le. 0) PRINT*, "Insert positive value!"
+    ENDDO
+    DO WHILE (cols2 .le. 0)
+       PRINT*, "Insert the number of columns of the second matrix"
+       READ*, cols2
+       IF (cols2 .le. 0) PRINT*, "Insert positive value!"
+    ENDDO
+  END SUBROUTINE INSERT_DIMENSION
+  
+  FUNCTION CHECK_DIMS(size1,size2)
+    !-----------------------------------------------------------------
+    ! This function checks whether the two vectors in input,
+    ! representing the dimensions of two matrices, allow for the
+    ! computation of a matrix-matrix product.
+    ! ARGUMENTS:
+    ! -size1,size2 :  two integer arrays, containing the dimensions
+    !                 of the two matrices
+    ! RETURNS:
+    ! -check_dims :   a logical value, is True when the dimensions
+    !                 are compatible, False otherwise
+    !-----------------------------------------------------------------
+    LOGICAL :: check_dims
+    INTEGER*4, DIMENSION(2) :: size1, size2
+    IF ((size1(2)) .eq. (size2(1))) THEN
+       check_dims = .TRUE.
+    ELSE
+       check_dims = .FALSE.
+    ENDIF
+    RETURN
+  END FUNCTION CHECK_DIMS
+  
+  FUNCTION matrix_multiplication1(m1,m2)
+      
+    
+    REAL*8, DIMENSION(:,:) :: m1,m2
+    REAL*8, DIMENSION(SIZE(m1,1),SIZE(m2,2)) :: matrix_multiplication1
+
+    matrix_multiplication1 = 0.d0
+    size1 = SHAPE(m1)
+    size2 = SHAPE(m2)
+    IF (CHECK_DIMS(size1,size2)) THEN
+       do ii=1,size1(1)
+          do jj=1,size2(2)
+             matrix_multiplication1(ii,jj)= DOT_PRODUCT(m1(ii,:),m2(:,jj)) ! intrinsic function DOT_PRODUCT()
+          enddo
+       enddo
+       RETURN
+    ELSE
+       print*,"WRONG DIMENSIONS!"
+       RETURN
+    END IF
+  END FUNCTION matrix_multiplication1
+      
+  FUNCTION matrix_multiplication2(m1,m2) 
+
+   
+    REAL*8, DIMENSION(:,:) :: m1,m2
+    REAL*8, DIMENSION(SIZE(m1,1),SIZE(m2,2)) :: matrix_multiplication2
+   
+    matrix_multiplication2 = 0.d0
+    size1 = SHAPE(m1)
+    size2 = SHAPE(m2)
+    IF (CHECK_DIMS(size1,size2)) THEN
+       DO ii=1,size1(1)
+          DO jj=1,size2(2)
+             DO kk=1,size1(2)
+                matrix_multiplication2(ii,jj) = matrix_multiplication2(ii,jj) + m1(ii,kk)*m2(kk,jj) ! direct application of the fomula
+             ENDDO
+          ENDDO
+       ENDDO
+       RETURN
+    ELSE
+       PRINT*,"WRONG DIMENSIONS!!"
+       RETURN
+    END IF
+  END FUNCTION matrix_multiplication2
+      
+
+  FUNCTION matrix_multiplication3(m1,m2)
+
+    REAL*8, DIMENSION(:,:) :: m1,m2
+    REAL*8, DIMENSION(SIZE(m1,1),SIZE(m2,2)) :: matrix_multiplication3
+    
+    matrix_multiplication3 = 0.d0
+    IF (CHECK_DIMS(size1,size2)) THEN
+       do ii=1,size2(2)
+          do jj=1,size1(2)
+             matrix_multiplication3(:,ii) =  matrix_multiplication3(:,ii) + m1(:,jj)*m2(jj,ii) ! multiplication of the columns of the first matrix by the elements of the second one.
+          enddo
+       enddo
+       RETURN
+    ELSE
+       PRINT*,"WRONG DIMENSIONS!!"
+       RETURN
+    END IF
+  END FUNCTION  matrix_multiplication3
+END MODULE matrix
+
+PROGRAM EX3
+  USE matrix
+  USE DEBUGMOD
+  IMPLICIT NONE
+  
+  debug_on = .FALSE.
+  
+
+  !      open(1,file="time1.txt")
+   !     open(2,file="time2.txt")
+    !    open(3,file="time3.txt")
+! open(4,file="time4.txt")
+  
+  CALL INSERT_DIMENSION(rows1,cols1,rows2,cols2)
+  
+  IF (CHECK_DIMS( (/rows1,cols1/) ,(/rows2,cols2/) )) THEN
+     ALLOCATE(matrix1(rows1,cols1),matrix2(rows2,cols2)) 
+     !     allocating the appropriate memory and initializing the matrices
+     
+    
+     call RANDOM_NUMBER(matrix1)
+     call RANDOM_NUMBER(matrix2)
+     
+     CALL DEBUG(debug_on, SHAPE(matrix1), &
+          (ALL(SHAPE(matrix1) .NE. (/rows1,cols1/))),"size mat1")
+     CALL DEBUG(debug_on, SHAPE(matrix2), &
+          (ALL(SHAPE(matrix2) .NE. (/rows2,cols2/))),"size mat2")
+
+     CALL CPU_TIME(start)
+     res1=matrix_multiplication1(matrix1,matrix2)
+     CALL DEBUG(debug_on, SHAPE(res1), &
+          (ALL(SHAPE(res1) .NE. (/rows1,cols2/))),"size result!")
+     CALL CPU_TIME(finish)
+     print*, "Using the intrinsic function DOT_PRODUCT() takes ",finish-start," seconds"
+        !   write(1,*) finish-start, r1*c2
+             
+
+
+     CALL CPU_TIME(start)
+     res2=matrix_multiplication2(matrix1,matrix2)
+     CALL DEBUG(debug_on, SHAPE(res2), &
+          (ALL(SHAPE(res2) .NE. (/rows1,cols2/))),"size result!")
+     CALL CPU_TIME(finish)
+     print*, "Using the standard way takes ",finish-start," seconds"
+     !  write(2,*) finish-start, r1*c2
+         
+
+     CALL CPU_TIME(start)
+     res3=matrix_multiplication3(matrix1,matrix2)
+     CALL DEBUG(debug_on, SHAPE(res3), &
+          (ALL(SHAPE(res3) .NE. (/rows1,cols2/))),"size result!")
+     CALL CPU_TIME(finish)
+     print*, "Using the 'columns' method takes ",finish-start," seconds"
+     ! write(3,*) finish-start, r1*c2
+     
+     CALL CPU_TIME(start)
+     res4=MATMUL(matrix1,matrix2)
+     CALL DEBUG(debug_on, SHAPE(res4), &
+          (ALL(SHAPE(res4) .NE. (/rows1,cols2/))),"size result!")
+     CALL CPU_TIME(finish)
+     print*, "Using the MATMUL method takes ",finish-start," seconds"
+              ! write(4,*) finish-start, r1*c2
+
+  ELSE
+     print*,"Dimension error: matrices can not be multiplicated"
+  END IF
+         
+     DEALLOCATE(matrix1,matrix2,res1,res2,res3,res4)
+
+   
+      
+STOP
+     
+     ! close(1)
+     ! close(2)
+     ! close(3)
+     ! close(4)
+END PROGRAM EX3
+   
+
+      
+      

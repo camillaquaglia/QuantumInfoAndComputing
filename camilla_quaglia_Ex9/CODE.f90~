@@ -1,0 +1,456 @@
+!     to compile 'gfortran Ex9-Quaglia-CODE.f90 -o Ex9-Quaglia-CODE.x '
+!     to run the executable  './Ex9-Quaglia-CODE.x'
+
+MODULE DEBUGMOD
+  IMPLICIT NONE
+
+  ! This module is to debug a code
+  ! Each subroutine, defined in the interface "DEBUG" has 4 inputs:
+  ! debug : logical flag. If TRUE the debug is activated 
+  ! var : variable (that can be of any type) on which the debug is performed
+  ! test : logical flag. If TRUE the check is activated 
+  ! message : the warning strings that the user wants to print
+
+  LOGICAL :: turn_debug_on
+
+  INTERFACE DEBUG
+     MODULE PROCEDURE INT4_DEBUG
+     MODULE PROCEDURE INT2_DEBUG
+     MODULE PROCEDURE INT8_DEBUG
+     MODULE PROCEDURE REAL4_DEBUG
+     MODULE PROCEDURE REAL8_DEBUG
+     MODULE PROCEDURE CMPLX8_DEBUG
+     MODULE PROCEDURE CMPLX16_DEBUG
+     MODULE PROCEDURE CMPLX8MAT_DEBUG
+     MODULE PROCEDURE CMPLX16MAT_DEBUG
+     MODULE PROCEDURE REAL8MAT_DEBUG
+     MODULE PROCEDURE REAL4MAT_DEBUG
+     MODULE PROCEDURE INT2VEC_DEBUG
+     MODULE PROCEDURE INT4VEC_DEBUG
+     MODULE PROCEDURE CMPLX16VEC_DEBUG
+  END INTERFACE DEBUG
+
+  
+CONTAINS
+  
+  SUBROUTINE INT4_DEBUG(debug,var,test,message)
+    INTEGER*4 :: var ! 4 bytes integer variable 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE INT4_DEBUG
+  
+  SUBROUTINE INT2_DEBUG(debug,var,test,message)
+    INTEGER*2 :: var ! 2 bytes integer variable 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE INT2_DEBUG
+  
+    SUBROUTINE INT8_DEBUG(debug,var,test,message)
+    INTEGER*8 :: var ! 2 bytes integer variable 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE INT8_DEBUG
+
+  SUBROUTINE CMPLX8_DEBUG(debug,var,test,message)
+    COMPLEX*8 :: var ! single precision complex variable 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE CMPLX8_DEBUG
+
+  SUBROUTINE CMPLX16_DEBUG(debug,var, test,message)
+    COMPLEX*16 :: var ! double precision complex variable
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE CMPLX16_DEBUG
+
+  SUBROUTINE CMPLX8MAT_DEBUG(debug,var,test,message)
+    COMPLEX*8, DIMENSION(:,:) :: var ! single precision complex matrix
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE CMPLX8MAT_DEBUG
+
+  SUBROUTINE CMPLX16MAT_DEBUG(debug,var,message)
+    COMPLEX*16, DIMENSION(:,:) :: var ! double precision complex matrix
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE CMPLX16MAT_DEBUG
+
+  SUBROUTINE REAL8_DEBUG(debug,var,test,message)
+    REAL*8 :: var        ! double precision real variable
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE REAL8_DEBUG
+
+  SUBROUTINE REAL4_DEBUG(debug,var, test,message)
+    REAL*4 :: var          ! single precision real variable 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE REAL4_DEBUG
+
+  SUBROUTINE REAL8MAT_DEBUG(debug,var,test,message)
+    REAL*8, DIMENSION(:,:) :: var  ! a double precision real matrix 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE REAL8MAT_DEBUG
+
+  SUBROUTINE REAL4MAT_DEBUG(debug,var, test,message)
+    REAL*4, DIMENSION(:,:) :: var  ! a single precision real matrix 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE REAL4MAT_DEBUG
+
+  SUBROUTINE INT4VEC_DEBUG(debug,var, test,message)
+    INTEGER*4, DIMENSION(:) :: var   ! 4 bytes integer vector 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE INT4VEC_DEBUG
+
+  SUBROUTINE INT2VEC_DEBUG(debug,var, test,message)
+    INTEGER*2, DIMENSION(:) :: var  ! 2 bytes integer vector 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+  END SUBROUTINE INT2VEC_DEBUG
+  SUBROUTINE CMPLX16VEC_DEBUG(debug,var, test,message)
+    COMPLEX*16, DIMENSION(:) :: var  ! double complex vector 
+    LOGICAL :: debug, test
+    CHARACTER(*) :: message
+    IF (debug .and. test) THEN       
+       PRINT*, message
+       PRINT*, "The variable to debug is: ", var
+  
+    ENDIF
+    END SUBROUTINE CMPLX16VEC_DEBUG
+
+END MODULE DEBUGMOD
+
+MODULE MATH
+	
+CONTAINS
+
+  FUNCTION TENSOR_PROD(m_1, m_2)
+	
+    IMPLICIT NONE
+		
+    COMPLEX*16, DIMENSION(:,:) :: m_1, m_2
+    COMPLEX*16, DIMENSION(SIZE(m_1,1)*SIZE(m_2,1),SIZE(m_1,2)*SIZE(m_2,2)) :: TENSOR_PROD
+    INTEGER*8 :: ii, jj, left_r, left_c, right_r, right_c
+		
+    left_r = SIZE(m_1,1)
+    left_c = SIZE(m_1,2)
+		
+    right_r = SIZE(m_2,1)
+    right_c= SIZE(m_2,2)
+		
+    DO ii=0, left_r-1
+       DO jj=0, left_c-1
+          TENSOR_PROD(ii*right_r+1:(ii+1)*right_r,jj*right_c+1:(jj+1)*right_c) = m_1(ii+1,jj+1)*m_2(:,:)
+       END DO
+    END DO
+    
+    RETURN
+END MODULE 
+
+PROGRAM EX9
+! program to study a system of spins 1/2 particle 
+! 
+
+USE DEBUGMOD
+USE MATH
+
+IMPLICIT NONE
+
+INTEGER*8 :: N, dim_
+INTEGER*4, DIMENSION(:), ALLOCATABLE :: diagonal
+COMPLEX*16, DIMENSION(:,:), ALLOCATABLE :: H
+COMPLEX*16, DIMENSION(:,:), ALLOCATABLE :: H_nonint, H_int
+COMPLEX*16, DIMENSION(:,:), ALLOCATABLE :: app 
+DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: eig_val
+REAL*8 :: lambda
+
+COMPLEX*16, DIMENSION(2,2), PARAMETER ::&
+		id_2 = RESHAPE((/ &
+		CMPLX(1d0,0d0), CMPLX(0d0,0d0),&
+		CMPLX(0d0,0d0), CMPLX(1d0,0d0)/),&
+		SHAPE(ident_2)),&
+		sigma_x = (RESHAPE((/ &
+		CMPLX(0d0,0d0), CMPLX(1d0,0d0),&
+		CMPLX(1d0,0d0), CMPLX(0d0,0d0)/),&
+		SHAPE(sigma_x))),&
+		sigma_y = (RESHAPE((/ &
+		CMPLX(0d0,0d0), CMPLX(0d0,1d0),&
+		CMPLX(0d0,-1d0), CMPLX(0d0,0d0)/),&
+		SHAPE(sigma_y))),&
+		sigma_z = (RESHAPE((/ &
+		CMPLX(1d0,0d0), CMPLX(0d0,0d0),&
+		CMPLX(0d0,0d0), CMPLX(-1d0,0d0) /),&
+		SHAPE(sigma_z)))
+
+LOGICAL :: debug_flag
+
+
+! parameters to use in DYSEV subroutine
+COMPLEX*16, DIMENSION(:), ALLOCATABLE ::  WORK_, wk_opt
+DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: RWORK_
+INTEGER*8 :: LWORK_, info_eig
+
+PRINT*, "Insert the number of particles"
+READ*, N
+
+PRINT*, "Insert the dimension of the subsystems"
+READ*, dim_
+
+CALL DEBUG(debug_flag,dim_,dim_ .GE. 0 ,'Insert a positive dimension')
+
+
+ALLOCATE(H(dim_**N,dim_**N))
+ALLOCATE(H_nonint(dim_**N,dim_**N))
+ALLOCATE(H_int(dim_**N,dim_**N))	
+ALLOCATE(app(dim_**N,dim_**N))	
+ALLOCATE(eig_val(dim_**N))
+ALLOCATE(diagonal(dim_**N))	
+ALLOCATE(RWORK_(3*dim_**N-2))
+
+! Initializing diagonal elemnts to zero
+diagonal = 0
+
+! Initializing hamiltonian to zeros
+H(:,:) = 0
+H_nonint(:,:) = 0
+H_int(:,:) = 0
+
+app = 0
+
+! Building diagonal
+DO ii=1,N
+   step = dim_**(N+1-ii)
+   DO jj=0,dim_**N-1,step
+      diagonal((jj+1):(jj+step/2)) = diagonal((jj+1):(jj+step/2))+1
+      diagonal((jj+step/2+1):(jj+step)) = diagonal((jj+step/2+1):(jj+step))-1
+   END DO
+END DO
+
+DO ii=1,dim_**N
+   H_nonint(ii,ii) = diagonal(ii)
+END DO
+
+DO ii=1,dim_**N
+   WRITE(*,*) diagonal(ii)
+END DO
+
+! ---------- Evaluating interaction terms ----------
+
+	! Looping over the interaction couples (which are N-1)
+	DO ii=1,N-1
+		! Restoring the app variable
+		app = 0
+		! We have to evaluate only (N-1) tensor products (in case of dim^2, we have only 1 tensor product for example)
+		!	The trick is to evaluate N tensor products, having the first one trivially evaluated
+		DO jj=1,N
+			! If first step, then do "trivial evaluation"
+			IF (jj.EQ.1) THEN
+				! The interactions are between particle ii and ii+1
+				IF (((N+1-jj).EQ.ii).OR.((N+1-jj).EQ.(ii+1))) THEN
+					app(1:dim_**(jj),1:dim_**(jj)) = sigma_x(:,:)
+					! Debugging
+					WRITE(*,*) "sigma_x"
+				ELSE
+					app(1:dim_**(jj),1:dim_**(jj)) = ident_2(:,:)
+					! Debugging
+					WRITE(*,*) "ident_2"
+				END IF
+			ELSE
+				! The interactions are between particle ii and ii+1
+				IF (((N+1-jj).EQ.ii).OR.((N+1-jj).EQ.(ii+1))) THEN
+					! Storing increasing matrices to evaluate the temporary results
+					app(1:dim_**(jj),1:dim_**(jj)) = Tensor_product(sigma_x, app( 1:dim_**(jj-1),1:dim_**(jj-1) ))
+					! Debugging
+					WRITE(*,*) "sigma_x"
+				ELSE
+					app(1:dim_**(jj),1:dim_**(jj)) = Tensor_product(ident_2, app( 1:dim_**(jj-1),1:dim_**(jj-1) ))
+					! Debugging
+					WRITE(*,*) "ident_2"
+				END IF
+			END IF
+		END DO
+		
+		WRITE(*,*) "--------------------------"
+		
+		! After having evaluated the temporary result, add it to the Honian
+		H_int(:,:) = H_int(:,:) + app(:,:)
+		
+	END DO
+	
+
+! Checking HONIAN results writing to file
+	!OPEN(12, file="H.txt", status='REPLACE', action='WRITE')
+	!
+	!DO ii=1,dim_**(N)
+	!	WRITE(12,"(F5.2,F7.2)",advance="No") REAL(H_nonint(ii,1)+H_int(ii,1))
+	!
+	!	DO jj=2,(dim_**(N)-1)
+	!		WRITE(12,"(F7.2,F7.2)",advance="No") REAL(H_nonint(ii,jj)+H_int(ii,jj))
+	!	END DO
+	!	
+	!	WRITE(12,"(F7.2,F7.2)",advance="Yes") REAL(H_nonint(ii,dim_**N)+H_int(ii,dim_**N))
+	!END DO
+	!
+	!CLOSE(12)
+
+	
+! ---------- LOOPING OVER LAMBDAS ----------
+
+	DO ii=0,20
+
+		lambda = 3.0/(20.)*ii
+
+		WRITE(*,*) "Evaluating lambda = ", lambda
+
+		! Building proper Honian
+		H = 0
+		H(:,:) =  H_int(:,:) + lambda*H_nonint(:,:)
+
+		! DIAGONALIZING
+		! Allocating 1 value for wk_opt
+		ALLOCATE(wk_opt(1))
+		
+		! Giving LWORK=-1 the subroutine only evaluates the optimal dimension for WORK_
+		LWORK_=-1
+		
+		! See documentation online
+		!  (http://www.netlib.org/lapack/explore-html/df/d9a/group__complex16_h_eeigen.html) 
+		CALL ZHEEV('N', 'U', dim_**N, H, dim_**N, eig_val, wk_opt, LWORK_, RWORK_, info_eig)
+		
+		LWORK_ = INT(wk_opt(1))
+		
+		! Allocating the optimal dimension for WORK
+		ALLOCATE(WORK_(LWORK_))
+
+		! Recalling the subroutine to do the diagonalization	
+		CALL ZHEEV('N', 'U', dim_**N, H, dim_**N, eig_val, WORK_, LWORK_, RWORK_, info_eig)
+		
+		DEALLOCATE(wk_opt)
+		DEALLOCATE(WORK_)
+	
+		! Storing the first four eigenvalues for every lambda
+		eig_val_results(ii+1,1) = lambda
+		eig_val_results(ii+1,2:5) = eig_val(1:4)
+
+	END DO
+
+! ---------- STORING RESULTS ----------
+
+	! Saving eigenvalues to file
+	OPEN(12, file="eig_val_results.txt", status='REPLACE', action='WRITE')
+	
+	DO ii=1,21
+		WRITE(12,"(F12.8)",advance="No") eig_val_results(ii,1)
+
+		DO jj=2,5-1
+			WRITE(12,"(F15.8)",advance="No") eig_val_results(ii,jj)
+		END DO
+		
+		WRITE(12,"(F15.8)",advance="Yes") eig_val_results(ii,5)
+	END DO
+	
+	CLOSE(12)
+	
+
+! ---------- DEALLOCATING ----------
+
+	DEALLOCATE(H)
+	DEALLOCATE(H_nonint)
+	DEALLOCATE(H_int)
+	
+	DEALLOCATE(app)
+	
+	DEALLOCATE(eig_val)
+	
+	DEALLOCATE(diagonal)
+	
+	DEALLOCATE(RWORK_)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+END PROGRAM EX9
+

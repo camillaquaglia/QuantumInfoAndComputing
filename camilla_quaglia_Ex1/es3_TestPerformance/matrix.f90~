@@ -1,0 +1,122 @@
+      MODULE matrix
+
+      REAL*4, DIMENSION(:,:), ALLOCATABLE :: m1,m2,res
+      REAL*4, DIMENSION(4) :: result
+      INTEGER*2 ::  ii, jj, kk
+   !   LOGICAL :: exists
+      DOUBLE PRECISION :: start,finish
+
+      CONTAINS
+
+      FUNCTION matrix_multiplication1(m1,m2,n_rows1,cols1_rows2,n_cols2) RESULT(resu)
+      
+      IMPLICIT NONE
+      INTEGER*2 :: n_rows1,cols1_rows2,n_cols2
+      REAL*4, DIMENSION(n_rows1,cols1_rows2) :: m1
+      REAL*4, DIMENSION(cols1_rows2,n_cols2) :: m2
+     
+      REAL*4, DIMENSION(n_rows1,cols1_rows2) :: resu
+
+      resu = 0
+      do ii=1,n_rows1
+         do jj=1,n_cols2
+            resu(ii,jj)= DOT_PRODUCT(m1(ii,:),m2(:,jj)) ! intrinsic function DOT_PRODUCT()
+         enddo
+      enddo
+      END FUNCTION matrix_multiplication1
+      
+     FUNCTION matrix_multiplication2(m1,m2,n_rows1,cols1_rows2,n_cols2) RESULT(resu)
+
+     IMPLICIT NONE
+     INTEGER*2 :: n_rows1,cols1_rows2,n_cols2
+     REAL*4, DIMENSION(n_rows1,cols1_rows2) :: m1
+     REAL*4, DIMENSION(cols1_rows2,n_cols2) :: m2
+     REAL*4, DIMENSION(n_rows1,cols1_rows2) :: resu
+    ! REAL*8 :: val
+
+     ! val = 0.D0
+     resu = 0
+     DO ii=1,n_rows1
+         DO jj=1,n_cols2
+            DO kk=1,cols1_rows2
+               resu(ii,jj) = resu(ii,jj) + m1(ii,kk)*m2(kk,jj) ! direct application of the fomula
+            ENDDO
+         ENDDO
+      ENDDO
+      END FUNCTION matrix_multiplication2
+      
+
+      FUNCTION matrix_multiplication3(m1,m2,n_rows1,cols1_rows2,n_cols2) RESULT(resu)
+
+      IMPLICIT NONE
+      INTEGER*2 :: n_rows1,cols1_rows2,n_cols2
+      REAL*4, DIMENSION(n_rows1,cols1_rows2) :: m1
+      REAL*4, DIMENSION(cols1_rows2,n_cols2) :: m2
+      REAL*4, DIMENSION(n_rows1,n_cols2) :: resu
+
+      resu = 0
+      do ii=1,n_cols2
+         do jj=1,cols1_rows2
+            resu(:,ii) = resu(:,ii) + m1(:,jj)*m2(jj,ii) ! multiplication of the columns of the first matrix by the elements of the second one.
+         enddo
+      enddo
+      END FUNCTION  matrix_multiplication3
+      END MODULE matrix
+
+      PROGRAM EX3
+      USE matrix
+      IMPLICIT NONE
+      INTEGER*2 :: r1,rc,c2
+!      INTEGER*2 :: n=1,m=13,g=14
+    
+      do r1 = 5,50,5
+         
+         do rc = 6,60,6
+            
+            do c2 = 4,40,4
+               
+               print*,"matrix1:",r1,"x",rc
+               print*,"matrix2:",rc,"x",c2
+         
+
+!     allocating the appropriate memory and initializing the matrices
+               ALLOCATE(m1(r1,rc),m2(rc,c2),res(r1,c2))
+     !   call random_seed()
+               call RANDOM_NUMBER(m1)
+               call RANDOM_NUMBER(m2)
+        ! print*,m1
+        ! print*,"******************************************************"
+        ! print*,m2
+
+               CALL CPU_TIME(start)
+               res=matrix_multiplication1(m1,m2,r1,rc,c2)
+        ! print*,res
+               CALL CPU_TIME(finish)
+               print*, "Using the intrinsic function DOT_PRODUCT() takes ",finish-start," seconds"
+
+
+               CALL CPU_TIME(start)
+               res=matrix_multiplication2(m1,m2,r1,rc,c2)
+         !print*,res
+               CALL CPU_TIME(finish)
+               print*, "Using the standard way takes ",finish-start," seconds"
+         
+
+               CALL CPU_TIME(start)
+               res=matrix_multiplication3(m1,m2,r1,rc,c2)
+         !print*,res
+               CALL CPU_TIME(finish)
+               print*, "Using the 'columns' method takes ",finish-start," seconds"
+         
+               DEALLOCATE(m1,m2,res)
+            enddo
+         enddo
+      enddo
+      
+      
+      STOP
+      END PROGRAM EX3
+
+
+      
+      

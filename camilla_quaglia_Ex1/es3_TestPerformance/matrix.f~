@@ -1,0 +1,20 @@
+      MODULE matrix
+
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: m1,m2,res
+      DOUBLE PRECISION, DIMENSION(4) :: result
+      INTEGER*2 ::  ii,jj,kk
+      LOGICAL :: exists
+      DOUBLE PRECISION :: start,finish
+
+      CONTAINS
+
+      FUNCTION matrix_multiplication(m1,m2,n_rows1,cols1_rows2,n_cols2)
+      IMPLICIT NONE
+      INTEGER*2 :: n_rows1,cols1_rows2,n_cols2
+      DOUBLE PRECISION, DIMENSION(n_rows1,cols1_rows2) :: m1
+      DOUBLE PRECISION, DIMENSION(cols1_rows2,n_cols2) :: m2
+      RESULT(resu)
+      DOUBLE PRECISION, DIMENSION(n_rows1,cols1_rows2) :: resu
+
+      
+      

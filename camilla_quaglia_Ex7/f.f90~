@@ -1,0 +1,7 @@
+module FFTW3
+   !  In any Fortran subroutine where you want to use FFTW functions, you should begin with these commands http://fftw.org/doc/Overview-of-Fortran-interface.html
+   use, intrinsic :: iso_c_binding
+   IMPLICIT NONE
+   include 'fftw3.f03' ! the file 'fftw3.f03' is in this path
+
+end module FFTW3

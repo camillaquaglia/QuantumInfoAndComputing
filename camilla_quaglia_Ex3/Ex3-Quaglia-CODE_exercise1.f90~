@@ -1,0 +1,92 @@
+!     to compile 'gfortran Ex3-Quaglia-CODE_exercise1.f90 -o Ex3-Quaglia-CODE_exercise1.x'
+  !     to run the executable  './Ex3-Quaglia-CODE_exercise1.x'
+
+MODULE DEBUGMOD
+  IMPLICIT NONE
+  LOGICAL :: debug_on
+
+  INTERFACE DEBUG
+     MODULE PROCEDURE INT4_DEBUG
+  !   MODULE PROCEDURE INT2_DEBUG
+   !  MODULE PROCEDURE REAL4_DEBUG
+    ! MODULE PROCEDURE REAL8_DEBUG
+    ! MODULE PROCEDURE CMPLX8_DEBUG
+    ! MODULE PROCEDURE CMPLX16_DEBUG
+    ! MODULE PROCEDURE CMPLX8MAT_DEBUG
+    ! MODULE PROCEDURE CMPLX16MAT_DEBUG
+    ! MODULE PROCEDURE REAL8MAT_DEBUG
+    ! MODULE PROCEDURE REAL4MAT_DEBUG
+    ! MODULE PROCEDURE INT2VEC_DEBUG
+    ! MODULE PROCEDURE INT4VEC_DEBUG
+  END INTERFACE DEBUG
+
+  
+CONTAINS
+  
+  SUBROUTINE INT4_DEBUG(debug,var,message)
+    ! a 4-byte integer variable debugging subroutine.
+    ! Calculates the truth value of check and prints
+    ! the results.
+    INTEGER*4 :: var
+    LOGICAL :: debug
+    CHARACTER(*) :: message
+    IF (debug) THEN       
+       PRINT*, message
+       PRINT*, "Variable content: ", var
+    
+    ENDIF
+  END SUBROUTINE INT4_DEBUG
+  
+!  SUBROUTINE DEBUGGING(debug,message,var,vec,mat)
+ !   LOGICAL, INTENT(IN) :: debug              ! 'debug' is a logical flag
+  !  CHARACTER(*),INTENT(IN) :: message        ! 'message' is the debug/error message
+   ! CLASS(*), OPTIONAL :: var     ! 'var' is the variable, optional
+   ! CLASS(*), DIMENSION(:), OPTIONAL :: vec   ! 'vec' is the vector,optional
+   ! CLASS(*), DIMENSION(:,:),OPTIONAL :: mat  ! 'mat' is the vector,optional
+    
+   ! IF (debug) THEN
+   !    PRINT*, message
+  !  END IF
+  !  IF(PRESENT(var)) THEN
+  !     select type(var)
+  !     type is (INTEGER)
+   !       PRINT*,"the variable is",var
+    !   type is (REAL)
+     !     PRINT*,"the variable is",var
+     !  type is (DOUBLE COMPLEX)
+     !     PRINT*,"the variable is",var
+          
+    !   end select
+   ! END IF
+   ! IF(PRESENT(vec)) THEN
+      ! select type(vec)
+      ! type is (INTEGER)
+       !   PRINT*,"the vector is",vec
+      ! type is (REAL)
+      !    PRINT*,"the vector is",vec
+     !  type is (DOUBLE COMPLEX)
+    !      PRINT*,"the vector is",vec
+      
+   !    end select
+       
+  !  END IF
+   ! IF(PRESENT(mat)) THEN
+    !   select type(vec)
+  !     type is (INTEGER)
+ !         PRINT*,"The matrix is",mat
+   !    type is (REAL)
+!          PRINT*,"The matrix is",mat
+ !      type is (DOUBLE COMPLEX)
+  !        PRINT*,"The matrix is",mat
+   !   
+    !   end select
+
+   ! END IF
+    
+ ! END SUBROUTINE DEBUGGING
+  
+END MODULE DEBUGMOD
+
+         
+      
+      

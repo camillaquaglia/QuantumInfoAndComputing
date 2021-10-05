@@ -1,0 +1,125 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{systeme}
+\usepackage{amsmath} 
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt} % Default \headrulewidth is 0.4pt
+\renewcommand{\footrulewidth}{0.4pt} % Default \footrulewidth is 0pt
+\lhead{Camilla Quaglia}
+\rhead{October 20, 2020}
+\lfoot{Quantum Information and Computing}
+\rfoot{A.Y 2020/2021 - Exercise 1, Page \thepage}
+
+
+\cfoot{\pagemark}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\title{\textbf{Derived Types in Fortran90}}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\begin{abstract}
+The aim of this exercise is to calculate the adjoint and the trace of a given matrix, with complex entries. This is implemented in Fortran90, through the definition of a \textit{double complex matrix derived TYPE}, that contains the matrix elements, the dimensions, the trace and the determinant. Also functions to perform the calculations are developed and the results are printed on text files. The focus is on the usage of the  \texttt{INTERFACES} to built new operators to solve our tasks.
+\end{abstract}
+\section*{Theory}
+The \textit{Hermitian adjoint matrix}, of a given (rectangular or square) matrix A, over the field $\mathbb{C}$ of complex numbers, is its complex-coniugate transpose matrix. The latter definition holds only for a finite dimensional Hilbert space $H$. \\ \\
+The adjoint matrix of $\math{A}$ is denoted as $\math{A}^\dag$, where \begin{equation} \math{A}^\dag = \math{A}^\intercal^*
+\label{c}
+\end{equation} 
+The symbol $*$ denotes the complex coniugate.
+\\
+\\
+The trace of a given square matrix $\math{A}$ , $n\times n$ , is defined as 
+\begin{equation}
+    Tr(\math{A}) = \sum_{i=1}^{n} \math{a}_{ii} 
+    \label{t}
+\end{equation}
+Note that the trace is \textit{only} defined for a square matrix.
+\\
+\\
+The following properties hold:
+\begin{equation}
+    Tr^{*}(\math{A})=Tr(\math{A}^\dag)
+    \label{p}
+\end{equation}
+\begin{equation}
+    det(\math{A}^\dag)=det{\math{A}}^{*}
+\end{equation}
+
+\newpage
+\section*{Code development}
+Firstly a \texttt{MODULE} called \texttt{matrix} is written and inside it a derived data \texttt{TYPE}, called \texttt{cmatrix}, has the following content:
+\begin{itemize}
+ \item A vector, named \texttt{RC}, that contains two integers, that are the dimensions of our matrix.
+  \item A matrix, named \texttt{m}, whose size is not yet specified (\texttt{ALLOCATABLE}) , that will contains double precision complex numbers.
+    \item Two double precision complex numbers, the trace and the determinant of the matrix. The determinant is not calculated in this exercise (maybe in future).
+\end{itemize}
+After the \texttt{TYPE}, there are the interfaces for the initialization of the type, the adjoint matrix and trace computation. The corresponding functions follow, below the keyword \texttt{CONTAINS}.\\
+Let's see the main points of them.
+\begin{description}
+ \item{1)} The function \texttt{f\_init} takes in input a two dimensional integer vector, named \texttt{m\_size}, that represents the matrix's size, and initializes the type defined above to zero. The vector \texttt{m\_size} is defined in the function and allows to check if the dimensions of the matrix inserted by the user are positive. If not so, a warning message is printed on screen.
+ \end{description}
+ To calculate the adjoint and the trace
+ the whole \texttt{cmatrix} data type is passed to the functions \texttt{adj\_cmatrix} and \texttt{trace\_cmatrix}.
+ \begin{description}
+ \item{2)} The function \texttt{trace\_cmatrix} returns a double precision complex number, that is the trace of the given matrix. When the matrix is not square a warning message is printed, setting the trace of this matrix to zero. As stated in the \textit{Theory} section, the trace is defined only for a square matrix.
+ \item{3)} The function  \texttt{adj\_cmatrix} returns all the quantities defined in \texttt{cmatrix}, properly calculated.
+In particular it calculates the adjoint through the following FORTRAN instrinsic way:
+\begin{equation}
+    TRANSPOSE(CONJG(matrix))
+\end{equation}
+\end{description}
+Then a subroutine called \texttt{writetxt} writes on a file the aforementioned informations.
+In the end the main program \texttt{EX2} is implemented. The program first asks the user the number of rows and columns he wants for the matrix. Then it allocates the matrix with the decided dimensions and choose at random the values for the real and the imaginary part of the entries. Then the matrix is printed in the file \texttt{"Amat.txt"} and its adjoint is calculated and printed in \texttt{"Aadj.txt"}. The trace for both is avaible. The calculations are done through the operators defined in the interfaces, \texttt{.INIT.} \texttt{.ADJ.} and \texttt{.TRACE.}.
+\section*{Results}
+I runned the code several times, varing the dimensions of the matrix. Each time the real and the imaginary part of the entries are choosen at random as expected. The figure \ref{fig:a} shows an example of the output, contained in the file \texttt{"Amat.txt"}.
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{a}
+\caption{Input complex matrix, randomly generated, with the trace.}
+\label{fig:a}
+\end{figure}
+\\
+One can easily check, in this dimensions ,that the trace satisfies the definition \eqref{t}.
+In figure \ref{fig:b} we can see the output contained in the file \texttt{"Aadj.txt"}.
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{b}
+\caption{The adjoint complex matrix, with the trace.}
+\label{fig:b}
+\end{figure}
+\\
+Again one can verify that the trace agrees with the definition \eqref{t} and that the matrix is the adjoint of the one in figure \ref{fig:a}, according to the definition \eqref{c}.
+Finally, comparing the traces in figure \ref{fig:a} and \ref{fig:b}, one can see that the property \eqref{p} is verified.
+\\
+\\
+\\Figures \ref{fig:a1} and \ref{fig:b1} show the outputs, contained respectively in the files \texttt{"Amat.txt"} and \texttt{"Aadj.txt"}. This time the dimensions chosen by the user are not equal i.e. the matrix is not square. One can perform the aforementioned check, the matrix in figure \ref{fig:b1} is the adjoint of the one in figure \ref{fig:a1}. Note that the trace in this case is set to zero, for both the matrices.
+\newpage
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{a1}
+\caption{Input complex matrix, randomly generated, with the trace.}
+\label{fig:a1}
+\end{figure}
+\\
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{b1}
+\caption{The adjoint complex matrix, with the trace.}
+\label{fig:b1}
+\end{figure}
+\section*{Self-Evaluation}
+The exercise is instructive since it allows to understand the powerful tool \texttt{INTERFACE OPERATOR}, that allows to 'summarize' in one symbol (the operator) one or even more functions. Further modifications of the code could be implementing the calculus of the determinant and adding some more functions that are used by the operators \texttt{.ADJ.}  \texttt{.TRACE.} and \texttt{.INIT.}
+
+\end{document}
+

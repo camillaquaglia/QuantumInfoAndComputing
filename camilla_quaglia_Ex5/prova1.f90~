@@ -1,0 +1,206 @@
+! To run the program 'gfortran p.f90 -o  p.x -llapack -lblas'
+! To run the executable ' ./p.x'
+
+MODULE H_MATRIX
+  
+  IMPLICIT NONE
+  INTEGER :: N   ! matrix dimension
+	
+CONTAINS
+  SUBROUTINE normal_rand(x, y)
+    ! this subroutine genetares two random numbers, x & y
+    ! sampled from the normal distribution, through the BOX-MULLER algorithm
+    REAL*4 :: u1, u2, r, theta
+    REAL*4, INTENT(OUT) :: x, y
+    
+    CALL RANDOM_NUMBER(u1) ! u1 and u2 are random numbers drawn from ~ U([0,1])
+    CALL RANDOM_NUMBER(u2)
+				
+    r = SQRT(2*(-LOG(u1)))
+    ! pi = 2*arcsin(1)
+    theta = 2*(2*ASIN(1.)) * u2
+				
+    x = r*COS(theta)
+    y = r*SIN(theta)
+    
+  END SUBROUTINE normal_rand
+
+  SUBROUTINE DIMENSION(N)
+    ! This subroutine asks the user the dimensions of the matrices to be
+  ! multiplied. It takes in input the integer values that are these inserted dimensions (rows&columns).
+    INTEGER :: N
+    
+    N=0      ! all the dimensions are 'inizialized' to zero
+   
+
+    DO WHILE (N <= 0)
+       PRINT*, "The dimension of the matrix is:"
+       READ*, N
+       IF (N <= 0) PRINT*, "Try with a positive value"
+    ENDDO
+  END SUBROUTINE DIMENSION
+
+
+END MODULE H_MATRIX
+
+
+PROGRAM Ex5
+
+!	USE DEBUG
+  USE H_MATRIX
+ ! USE SORT
+
+  IMPLICIT NONE
+
+  COMPLEX*8, DIMENSION(:,:),ALLOCATABLE :: A  ! A is the Hermitian matrix
+
+  INTEGER :: info ! info is a variable required by the CHEEV subroutine (check LAPACK's documentation )
+   ! if info == 0 eigenvalues are stored in ascending order
+  REAL*4, DIMENSION(:), ALLOCATABLE :: eig_vec ! vector in which are stored the eigeivalues of A 
+  INTEGER :: ii,jj ! index
+  INTEGER, DIMENSION(2) :: N_
+  REAL*4 :: re, im ! real and imaginary part of the entries of the matrix A
+  REAL*4, DIMENSION(:), ALLOCATABLE :: delta_eig, s_i 
+  REAL*4, DIMENSION(:,:), ALLOCATABLE :: s_i_a
+	
+   ! variables to be used in CHEEV (check the link below)
+  COMPLEX*8, DIMENSION(:), ALLOCATABLE ::  WORK
+  REAL*4, DIMENSION(:), ALLOCATABLE :: RWORK
+  INTEGER, DIMENSION(7) :: spacings
+  REAL*4, DIMENSION(:), ALLOCATABLE :: spac200, spac100, spac50, spac25, spac10, spac5, spac2
+  INTEGER :: temp_spac
+  CHARACTER :: file_name
+	
+  CALL DIMENSION(N)
+  N_(1) = N
+  N_(2) = N
+
+   ! Defining spacings (it is intended to be fixed)
+  spacings = [N/200,N/100,N/50,N/25,N/10,N/5,N/2]
+  OPEN(33, file="spacings.txt",status= "REPLACE",action="WRITE")
+  DO ii=1,SIZE(spacings)
+     WRITE(33,"(I6.5)") spacings(ii)
+  END DO
+  CLOSE(33)
+   
+  ALLOCATE(A(N,N)) ! Allocate SQUARE matrix A of chosen dimension
+	
+  ALLOCATE(eig_vec(N)) ! Allocate eigenvalues vector
+
+  ALLOCATE(delta_eig(N-1), s_i(N-1)) ! Allocate eig. differeces and spacings array
+
+  ALLOCATE(s_i_a(SIZE(spacings), N-1)) ! Allocating matrix for alternatives spacings
+
+	! Allocating correspondig vectors for spacing
+  ALLOCATE(spac200(N/200), spac100(N/100), spac50(N/50))
+  ALLOCATE(spac25(N/25), spac10(N/10), spac5(N/5), spac2(N/2))
+	
+
+! ---------- INITIALIZING MATRICES (with random numbers) ----------
+
+	! A
+
+	! Starting checkpointing (and eventually initializing to 0 all elements)
+!CALL Checkpoint(Debug_flag, 'Read', "A", A, N_)
+!	CALL RANDOM_NUMBER(A)
+
+	! Making the matrix hermitian
+  DO ii=1,N
+     DO jj=1,ii
+        CALL normal_rand(re,im)
+			
+        IF (ii.EQ.jj) THEN
+           A(ii,jj) = CMPLX(re, 0e0)
+        ELSE
+           A(ii,jj) = CMPLX(re, im)
+           A(jj,ii) = CMPLX(re, -im)
+        END IF
+     END DO
+  END DO
+
+!CALL Checkpoint(Debug_flag, 'Write', "A", A, N_)
+
+	
+! ---------- STARTING OPERATIONS ----------
+
+	! Allocating variables to make subroutine works with dummy variables
+  ALLOCATE(WORK(2*N-1), RWORK(3*N-2))
+ 
+	! CHEEV(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK, INFO)
+	! Arguments are:
+	!  JOBZ	: JOBZ is CHARACTER*1. If = 'N': Compute eigenvalues only; if = 'V': Compute eigenvalues and eigenvectors.
+	!  UPLO	: UPLO is CHARACTER*1. If = 'U':  Upper triangle of A is stored; if = 'L': Lower triangle of A is stored.
+	!  N		: N is INTEGER. The order of the matrix A.  N >= 0.
+  CALL ZHEEV('N', 'U', N, A, N, eig_vec, WORK, 2*N-1, RWORK, info)
+	
+	
+	! Evaluating differences between consecutive eigenvalues
+  delta_eig(:) = eig_vec(2:) - eig_vec(:N-1)
+	
+  s_i = delta_eig/(SUM(delta_eig)/(N-1))
+	
+  DO ii=1,SIZE(spacings)
+     temp_spac = N/spacings(ii)
+     DO jj=1, temp_spac
+			
+        IF (temp_spac.EQ.(N/200)) THEN
+           spac200(jj) = SUM(eig_val(2:(spacings(ii)*jj+1)) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+           s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac200(jj)
+				
+        ELSEIF (temp_spac.EQ.(N/100)) THEN
+           spac100(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+           ! Saving new results
+           s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac100(jj)
+
+        ELSEIF (temp_spac.EQ.(N/50)) THEN
+           spac50(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+           s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac50(jj)
+           
+        ELSEIF (temp_spac.EQ.(N/25)) THEN
+           spac25(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+           s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac25(jj)
+
+        ELSEIF (temp_spac.EQ.(N/10)) THEN
+				spac10(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+    s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac10(jj)
+
+ ELSEIF (temp_spac.EQ.(N/5)) THEN
+    spac5(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+    s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac5(jj)
+
+ ELSEIF (temp_spac.EQ.(N/2)) THEN
+    spac2(jj) = SUM(eig_val(2:spacings(ii)*jj+1) - eig_val((spacings(ii)*(jj-1)+1):(spacings(ii)*jj)))/spacings(ii)
+				! Saving new results
+    s_i_a(ii,(spacings(ii)*(jj-1)+1):(spacings(ii)*jj)) = delta_eig((spacings(ii)*(jj-1)+1):(spacings(ii)*jj))/spac2(jj)
+    
+ END IF
+END DO
+END DO
+	
+! ---------- SAVING RESULTS INTO A FILE ----------
+	
+	! Opening and REWRITING existing file
+  OPEN(11, file="normalized_spacings_between_eigenvalues.txt", status='REPLACE', action='WRITE')
+	
+  DO ii=1,(N-1)
+     WRITE(11,*)s_i(ii)
+  END DO
+
+  CLOSE(11)
+ 
+  STOP
+	
+! ---------- DEALLOCATING ----------
+	
+	! Deallocating rises errors
+  DEALLOCATE(A)
+  DEALLOCATE(eig_vec, delta_eig, s_i, s_i_a)
+  DEALLOCATE(spac200, spac100, spac50, spac25, spac10, spac5, spac2)
+  STOP
+  
+END PROGRAM Ex5
